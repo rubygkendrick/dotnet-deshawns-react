@@ -1,10 +1,25 @@
-import { getGreeting } from "./apiManager";
+import { Link } from "react-router-dom";
+import { getGreeting, getAllDogs } from "./apiManager";
 import { useEffect, useState } from "react";
 
 export default function Home() {
   const [greeting, setGreeting] = useState({
     message: "Not Connected to the API",
   });
+
+  const [allDogs, setAllDogs] = useState([])
+
+
+  const getAndResetAllDogs = () => {
+    getAllDogs().then(dogsArray => {
+      setAllDogs(dogsArray)
+    })
+  }
+
+  useEffect(() => {
+    getAndResetAllDogs()
+  }, [])
+
 
   useEffect(() => {
     getGreeting()
@@ -14,5 +29,18 @@ export default function Home() {
       });
   }, []);
 
-  return <p>{greeting.message}</p>;
+  return <>
+    <h1>{greeting.message}</h1>
+    <div className="dogListContainer">
+      <h2>Current Dogs:</h2>
+      {allDogs.map((dog) => {
+        return <div className="dogListItem" key={dog.id}>
+          <Link to={`/dogs/${dog.id}`}>
+            <p>{dog.name}</p>
+          </Link>
+        </div>
+      })}
+    </div>
+  </>
+
 }

@@ -12,7 +12,9 @@ root.render(
     <Routes>
       <Route path="/" element={<App />}>
         <Route index element={<Home />} />
+        <Route path="dogs/:dogId" element={<>Dog Details</>}></Route>
       </Route>
+      
     </Routes>
   </BrowserRouter>,
 );
