@@ -1,42 +1,28 @@
-import { Link } from "react-router-dom";
-import { getAllDogs } from "./apiManager";
+import { useParams } from "react-router-dom";
+import { getDogDetails } from "./apiManager";
 import { useEffect, useState } from "react";
 
-export default function Home() {
-    
-  const [allDogs, setAllDogs] = useState([])
+export default function DogDetails()  {
+
+  const [dog, setDog] = useState({})
+  const { dogId } = useParams()
 
 
-  const getAndResetAllDogs = () => {
-    getAllDogs().then(dogsArray => {
-      setAllDogs(dogsArray)
+  const fetchDogDetails = () => {
+    getDogDetails(parseInt(dogId)).then(dogObject => {
+      setDog(dogObject)
     })
   }
 
   useEffect(() => {
-    getAndResetAllDogs()
+   fetchDogDetails()
   }, [])
 
 
-  useEffect(() => {
-    getGreeting()
-      .then(setGreeting)
-      .catch(() => {
-        console.log("API not connected");
-      });
-  }, []);
 
   return <>
-    <h1>{greeting.message}</h1>
-    <div className="dogListContainer">
-      <h2>Current Dogs:</h2>
-      {allDogs.map((dog) => {
-        return <div className="dogListItem" key={dog.id}>
-          <Link to={`/dogs/${dog.id}`}>
-            <p>{dog.name}</p>
-          </Link>
-        </div>
-      })}
+    <div className="dogDetailsContainer">
+      <h3>{dog.name} is being walked by {dog.walker?.name} in {dog.city?.name}</h3>
     </div>
   </>
 

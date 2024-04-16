@@ -87,11 +87,110 @@ List<Dogs> dogs = new List<Dogs>
     }
 
 };
+List<Walker> walkers = new List<Walker>
+{
+    new Walker()
+    {
+        Id = 1,
+        Name = "Ruby",
+    },
+    new Walker()
+{
+    Id = 2,
+    Name = "Dobby",
+},
+new Walker()
+{
+    Id = 3,
+    Name = "Nancy",
+},
+new Walker()
+{
+    Id = 4,
+    Name = "Aaron",
+},
+new Walker()
+{
+    Id = 5,
+    Name = "Paul",
+},
+new Walker()
+{
+    Id = 6,
+    Name = "Gill",
+},
+new Walker()
+{
+    Id = 7,
+    Name = "Jimmy",
+},
+new Walker()
+{
+    Id = 8,
+    Name = "Andy",
+},
+new Walker()
+{
+    Id = 9,
+    Name = "Izzy",
+}
+
+};
+
+List<City> cities = new List<City>
+{
+    new City()
+{
+    Id = 1,
+    Name = "Nashville",
+},
+new City()
+{
+    Id = 2,
+    Name = "New York City",
+},
+new City()
+{
+    Id = 3,
+    Name = "Los Angeles",
+},
+new City()
+{
+    Id = 4,
+    Name = "Chicago",
+},
+new City()
+{
+    Id = 5,
+    Name = "Houston",
+},
+new City()
+{
+    Id = 6,
+    Name = "Phoenix",
+},
+new City()
+{
+    Id = 7,
+    Name = "Philadelphia",
+},
+new City()
+{
+    Id = 8,
+    Name = "San Antonio",
+},
+new City()
+{
+    Id = 9,
+    Name = "San Diego",
+}
+
+};
 
 
 app.MapGet("/api/hello", () =>
 {
-    return new { Message = "Welcome to DeShawn's Dog Walking" };
+    return new { Message = "🐕‍🦺 Welcome to DeShawn's Dog Walking 🐩" };
 });
 
 app.MapGet("/api/dogs", () =>
@@ -105,5 +204,37 @@ app.MapGet("/api/dogs", () =>
     });
 });
 
+// get function to get the dogs details, I need to also have the walker name associated with the dog
+// add a Walker object to the Dog class that will display the info for the walker... 
+//create an endpoint that gets the dog by the dogID 
+
+app.MapGet("/api/dogs/{id}", (int id) =>
+{
+    Dogs dog = dogs.FirstOrDefault(d => d.Id == id);
+    if (dog == null)
+    {
+        return Results.NotFound();
+    }
+    Walker walker = walkers.FirstOrDefault(w => w.Id == dog.WalkerId);
+    City city = cities.FirstOrDefault(c => c.Id == dog.CityId);
+
+    return Results.Ok(new DogsDTO
+    {
+        Id = dog.Id,
+        Name = dog.Name,
+        WalkerId = dog.WalkerId,
+        Walker = new WalkerDTO
+        {
+            Id = walker.Id,
+            Name = walker.Name
+        },
+        CityId = dog.CityId,
+        City = new CityDTO
+        {
+            Id = city.Id,
+            Name = city.Name
+        }
+    });
+});
 
 app.Run();
