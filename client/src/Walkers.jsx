@@ -6,6 +6,7 @@ export default function Walkers() {
 
     const [allWalkers, setAllWalkers] = useState([])
     const [allCities, setAllCities] = useState([])
+    const [selectedCity, setSelectedCity] = useState({})
     const navigate = useNavigate()
 
 
@@ -26,19 +27,26 @@ export default function Walkers() {
         getAndResetAllCities()
     }, [])
 
+    const handleSubmitClick = () => {
+       
+    }
 
     return <>
         <div className="walkerListContainer">
-           
+
             <h2>Current Walkers:</h2>
             {allWalkers.map((walker) => {
                 return <div className="walkerListItem" key={walker.id}>
                     <p>{walker.name}</p>
                 </div>
             })}
-             <select
+            <select
                 className="walkerCity-input"
-                value={0}
+                value={selectedCity.id} // Assuming `dogCity.city` is the selected city
+                onChange={(event) => {
+                    const newCity = event.target.value;
+                    setSelectedCity(newCity);
+                }}
             >
                 <option value="">Filter Walker By City</option>
                 {allCities.map((city) => (
