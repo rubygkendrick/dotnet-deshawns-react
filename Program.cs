@@ -187,6 +187,65 @@ new City()
 
 };
 
+List<WalkerCities> walkerCities = new List<WalkerCities>
+{
+    new WalkerCities()
+    {
+        Id = 1,
+        WalkerId = 3,
+        CityId = 4
+    },
+    new WalkerCities()
+    {
+        Id = 2,
+        WalkerId = 5,
+        CityId = 2
+    },
+    new WalkerCities()
+    {
+        Id = 3,
+        WalkerId = 1,
+        CityId = 6
+    },
+    new WalkerCities()
+    {
+        Id = 4,
+        WalkerId = 7,
+        CityId = 9
+    },
+    new WalkerCities()
+    {
+        Id = 5,
+        WalkerId = 2,
+        CityId = 3
+    },
+    new WalkerCities()
+    {
+        Id = 6,
+        WalkerId = 6,
+        CityId = 7
+    },
+    new WalkerCities()
+    {
+        Id = 7,
+        WalkerId = 4,
+        CityId = 8
+    },
+    new WalkerCities()
+    {
+        Id = 8,
+        WalkerId = 9,
+        CityId = 1
+    },
+    new WalkerCities()
+    {
+        Id = 9,
+        WalkerId = 8,
+        CityId = 5
+    }
+    
+};
+
 
 app.MapGet("/api/hello", () =>
 {
@@ -212,6 +271,17 @@ app.MapGet("/api/cities", () =>
         Name = c.Name,
     });
 });
+
+app.MapGet("/api/walkers", () =>
+{
+    return walkers.Select(w => new WalkerDTO
+    {
+        Id = w.Id,
+        Name = w.Name,
+    });
+});
+
+
 
 
 app.MapPost("/api/dogs", (Dogs dog) =>
