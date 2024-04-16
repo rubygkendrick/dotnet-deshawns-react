@@ -204,9 +204,54 @@ app.MapGet("/api/dogs", () =>
     });
 });
 
-// get function to get the dogs details, I need to also have the walker name associated with the dog
-// add a Walker object to the Dog class that will display the info for the walker... 
-//create an endpoint that gets the dog by the dogID 
+app.MapGet("/api/cities", () =>
+{
+    return cities.Select(c => new CityDTO
+    {
+        Id = c.Id,
+        Name = c.Name,
+    });
+});
+
+
+app.MapPost("/api/dogs", (Dogs dog) =>
+{
+    City city = cities.FirstOrDefault(c => c.Id == dog.CityId);
+
+
+    if (dog == null)
+    {
+        return Results.BadRequest();
+    }
+
+    if (dogs.Count == 0)
+    {
+        dog.Id = 1; // Set an initial ID of 1 for the new dog
+    }
+    else
+    {
+        // Get the maximum ID from existing dogs and increment it
+        dog.Id = dogs.Max(d => d.Id) + 1;
+    }
+
+    dogs.Add(dog);
+
+    return Results.Created($"/api/dogs/{dog.Id}", new DogsDTO
+    {
+        Id = dog.Id,
+        Name = dog.Name,
+        WalkerId = 0,
+        Walker = null,
+        CityId = city.Id,
+        City = new CityDTO
+        {
+            Id = city.Id,
+            Name = city.Name
+        }
+    });
+
+});
+
 
 app.MapGet("/api/dogs/{id}", (int id) =>
 {
@@ -215,19 +260,25 @@ app.MapGet("/api/dogs/{id}", (int id) =>
     {
         return Results.NotFound();
     }
-    Walker walker = walkers.FirstOrDefault(w => w.Id == dog.WalkerId);
+    Walker walker = null;
+    if (dog.Walker != null)
+    {
+        walker = walkers.FirstOrDefault(w => w.Id == dog.WalkerId);
+    }
+
     City city = cities.FirstOrDefault(c => c.Id == dog.CityId);
+
 
     return Results.Ok(new DogsDTO
     {
         Id = dog.Id,
         Name = dog.Name,
         WalkerId = dog.WalkerId,
-        Walker = new WalkerDTO
+        Walker = walker != null ? new WalkerDTO
         {
             Id = walker.Id,
             Name = walker.Name
-        },
+        } : null, // Set Walker to null if walker is null
         CityId = dog.CityId,
         City = new CityDTO
         {
