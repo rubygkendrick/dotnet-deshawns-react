@@ -12,3 +12,19 @@ export const getDogDetails = async (dogId) => {
   const res = await fetch(`/api/dogs/${dogId}`);
   return res.json();
 }
+
+export const addNewDog = async (newDogObject) => {
+  return fetch("/api/dogs", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(newDogObject),
+  })
+}
+
+
+export const getAllCities = async () => {
+  const res = await fetch ("/api/cities")
+  return res.json()
+}

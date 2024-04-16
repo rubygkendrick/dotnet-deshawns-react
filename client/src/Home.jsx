@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { getGreeting, getAllDogs } from "./apiManager";
 import { useEffect, useState } from "react";
 
@@ -8,6 +8,7 @@ export default function Home() {
   });
 
   const [allDogs, setAllDogs] = useState([])
+  const navigate = useNavigate()
 
 
   const getAndResetAllDogs = () => {
@@ -29,6 +30,11 @@ export default function Home() {
       });
   }, []);
 
+  const handleAddADogNavigation = () => 
+  {
+    navigate("/newDog")
+  }
+
   return <>
     <h1>{greeting.message}</h1>
     <div className="dogListContainer">
@@ -40,6 +46,9 @@ export default function Home() {
           </Link>
         </div>
       })}
+    </div>
+    <div>
+      <button onClick={handleAddADogNavigation}>Add a Dog</button>
     </div>
   </>
 
