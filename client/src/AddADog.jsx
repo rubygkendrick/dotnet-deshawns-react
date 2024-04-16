@@ -23,7 +23,10 @@ export default function AddADog() {
             cityId: parseInt(dogCity)
         }
         addNewDog(newDog)
-        navigate("/")
+            .then(() => {
+                // Navigate to the home page after adding the new dog
+                navigate("/");
+            })
     }
 
     return <>
@@ -33,7 +36,7 @@ export default function AddADog() {
 
                 placeholder="Dog's Name"
                 onChange={(event) => {
-        
+
                     const newDogName = event.target.value
                     setDogName(newDogName)
                 }}
@@ -42,7 +45,7 @@ export default function AddADog() {
                 className="dog-input"
                 value={dogCity.city} // Assuming `dogCity.city` is the selected city
                 onChange={(event) => {
-                    
+
                     const newDogCity = event.target.value;
                     setDogCity(newDogCity);
                 }}
