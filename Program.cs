@@ -243,7 +243,7 @@ List<WalkerCities> walkerCities = new List<WalkerCities>
         WalkerId = 8,
         CityId = 5
     }
-    
+
 };
 
 
@@ -330,12 +330,9 @@ app.MapGet("/api/dogs/{id}", (int id) =>
     {
         return Results.NotFound();
     }
-    Walker walker = null;
-    if (dog.Walker != null)
-    {
-        walker = walkers.FirstOrDefault(w => w.Id == dog.WalkerId);
-    }
 
+
+    Walker walker = walkers.FirstOrDefault(w => w.Id == dog.WalkerId);
     City city = cities.FirstOrDefault(c => c.Id == dog.CityId);
 
 
@@ -348,13 +345,13 @@ app.MapGet("/api/dogs/{id}", (int id) =>
         {
             Id = walker.Id,
             Name = walker.Name
-        } : null, // Set Walker to null if walker is null
+        } : null,
         CityId = dog.CityId,
-        City = new CityDTO
+        City = city != null ? new CityDTO
         {
             Id = city.Id,
             Name = city.Name
-        }
+        } : null
     });
 });
 
