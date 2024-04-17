@@ -23,6 +23,16 @@ export const addNewDog = async (newDogObject) => {
   })
 }
 
+export const addNewCity = async (newCityObject) => {
+  return fetch("/api/cities", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(newCityObject),
+  })
+}
+
 
 export const getAllCities = async () => {
   const res = await fetch ("/api/cities")
