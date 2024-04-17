@@ -28,3 +28,9 @@ export const getAllCities = async () => {
   const res = await fetch ("/api/cities")
   return res.json()
 }
+
+
+export const getAllWalkers = async () => {
+  const res = await fetch ("/api/walkers")
+  return res.json();
+}

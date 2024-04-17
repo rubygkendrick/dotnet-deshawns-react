@@ -23,7 +23,8 @@ export default function DogDetails() {
     return <>
         <div className="dogDetailsContainer">
             <h3>
-                {dog?.name} is being walked by {dog.walker ? dog.walker.name : "no one"} in {dog.city?.name}
+            {dog?.name} is being walked by {dog.walker ? dog.walker?.name : "no one"} in {dog.city?.name}
+
             </h3>
 
         </div>

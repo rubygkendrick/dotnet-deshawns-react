@@ -187,6 +187,65 @@ new City()
 
 };
 
+List<WalkerCities> walkerCities = new List<WalkerCities>
+{
+    new WalkerCities()
+    {
+        Id = 1,
+        WalkerId = 3,
+        CityId = 4
+    },
+    new WalkerCities()
+    {
+        Id = 2,
+        WalkerId = 5,
+        CityId = 2
+    },
+    new WalkerCities()
+    {
+        Id = 3,
+        WalkerId = 1,
+        CityId = 6
+    },
+    new WalkerCities()
+    {
+        Id = 4,
+        WalkerId = 7,
+        CityId = 9
+    },
+    new WalkerCities()
+    {
+        Id = 5,
+        WalkerId = 2,
+        CityId = 3
+    },
+    new WalkerCities()
+    {
+        Id = 6,
+        WalkerId = 6,
+        CityId = 7
+    },
+    new WalkerCities()
+    {
+        Id = 7,
+        WalkerId = 4,
+        CityId = 8
+    },
+    new WalkerCities()
+    {
+        Id = 8,
+        WalkerId = 9,
+        CityId = 1
+    },
+    new WalkerCities()
+    {
+        Id = 9,
+        WalkerId = 8,
+        CityId = 5
+    }
+
+};
+
 
 app.MapGet("/api/hello", () =>
 {
@@ -204,14 +263,71 @@ app.MapGet("/api/dogs", () =>
     });
 });
 
+//app.MapGet("/api/cities", () =>
+//{
+//
+//    List<Walker> walkersForCity = walkerCities.Select(wc => walkers.First(w => w.Id == wc.WalkerId)).ToList();
+//
+//    List<WalkerDTO> walkerDTOs = walkersForCity.Select(walker => new WalkerDTO
+//    {
+//        Id = walker.Id,
+//        Name = walker.Name
+//    }).ToList();
+//
+//    return cities.Select(c => new CityDTO
+//    {
+//        Id = c.Id,
+//        Name = c.Name,
+//        Walkers = walkerDTOs
+//    });
+//});
+
 app.MapGet("/api/cities", () =>
 {
-    return cities.Select(c => new CityDTO
+    List<CityDTO> cityDTOs = new List<CityDTO>();
+
+    foreach (var city in cities)
     {
-        Id = c.Id,
-        Name = c.Name,
+        // Find the walker cities for the current city
+        List<WalkerCities> walkerCitiesForCity = walkerCities.Where(wc => wc.CityId == city.Id).ToList();
+
+        // Find the walkers for the current city
+        List<Walker> walkersForCity = walkerCitiesForCity.Select(wc => walkers.First(w => w.Id == wc.WalkerId)).ToList();
+
+        // Convert walkers to WalkerDTOs
+        List<WalkerDTO> walkerDTOs = walkersForCity.Select(walker => new WalkerDTO
+        {
+            Id = walker.Id,
+            Name = walker.Name
+        }).ToList();
+
+        // Create CityDTO for the current city
+        CityDTO cityDTO = new CityDTO
+        {
+            Id = city.Id,
+            Name = city.Name,
+            Walkers = walkerDTOs // Assign the list of WalkerDTOs to the Walkers property
+        };
+
+        // Add the CityDTO to the list
+        cityDTOs.Add(cityDTO);
+    }
+
+    return cityDTOs;
+});
+
+
+
+app.MapGet("/api/walkers", () =>
+{
+    return walkers.Select(w => new WalkerDTO
+    {
+        Id = w.Id,
+        Name = w.Name,
     });
 });
+
+
 
 
 app.MapPost("/api/dogs", (Dogs dog) =>
@@ -252,6 +368,31 @@ app.MapPost("/api/dogs", (Dogs dog) =>
 
 });
 
+app.MapGet("/api/cities/{id}", (int id) =>
+{
+
+    City city = cities.FirstOrDefault(c => c.Id == id);
+
+    List<WalkerCities> walkerCitiesForCity = walkerCities.Where(wc => wc.WalkerId == id).ToList();
+
+    List<Walker> walkersForCity = walkerCitiesForCity.Select(wc => walkers.First(w => w.Id == wc.WalkerId)).ToList();
+
+    List<WalkerDTO> walkerDTOs = walkersForCity.Select(walker => new WalkerDTO
+    {
+        Id = walker.Id,
+        Name = walker.Name
+    }).ToList();
+
+
+    return new CityDTO
+    {
+        Id = city.Id,
+        Name = city.Name,
+        Walkers = walkerDTOs
+    };
+
+});
+
 
 app.MapGet("/api/dogs/{id}", (int id) =>
 {
@@ -260,12 +401,9 @@ app.MapGet("/api/dogs/{id}", (int id) =>
     {
         return Results.NotFound();
     }
-    Walker walker = null;
-    if (dog.Walker != null)
-    {
-        walker = walkers.FirstOrDefault(w => w.Id == dog.WalkerId);
-    }
 
+
+    Walker walker = walkers.FirstOrDefault(w => w.Id == dog.WalkerId);
     City city = cities.FirstOrDefault(c => c.Id == dog.CityId);
 
 
@@ -278,13 +416,13 @@ app.MapGet("/api/dogs/{id}", (int id) =>
         {
             Id = walker.Id,
             Name = walker.Name
-        } : null, // Set Walker to null if walker is null
+        } : null,
         CityId = dog.CityId,
-        City = new CityDTO
+        City = city != null ? new CityDTO
         {
             Id = city.Id,
             Name = city.Name
-        }
+        } : null
     });
 });
 
