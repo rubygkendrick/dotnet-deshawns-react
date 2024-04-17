@@ -263,14 +263,60 @@ app.MapGet("/api/dogs", () =>
     });
 });
 
+//app.MapGet("/api/cities", () =>
+//{
+//
+//    List<Walker> walkersForCity = walkerCities.Select(wc => walkers.First(w => w.Id == wc.WalkerId)).ToList();
+//
+//    List<WalkerDTO> walkerDTOs = walkersForCity.Select(walker => new WalkerDTO
+//    {
+//        Id = walker.Id,
+//        Name = walker.Name
+//    }).ToList();
+//
+//    return cities.Select(c => new CityDTO
+//    {
+//        Id = c.Id,
+//        Name = c.Name,
+//        Walkers = walkerDTOs
+//    });
+//});
+
 app.MapGet("/api/cities", () =>
 {
-    return cities.Select(c => new CityDTO
+    List<CityDTO> cityDTOs = new List<CityDTO>();
+
+    foreach (var city in cities)
     {
-        Id = c.Id,
-        Name = c.Name,
-    });
+        // Find the walker cities for the current city
+        List<WalkerCities> walkerCitiesForCity = walkerCities.Where(wc => wc.CityId == city.Id).ToList();
+
+        // Find the walkers for the current city
+        List<Walker> walkersForCity = walkerCitiesForCity.Select(wc => walkers.First(w => w.Id == wc.WalkerId)).ToList();
+
+        // Convert walkers to WalkerDTOs
+        List<WalkerDTO> walkerDTOs = walkersForCity.Select(walker => new WalkerDTO
+        {
+            Id = walker.Id,
+            Name = walker.Name
+        }).ToList();
+
+        // Create CityDTO for the current city
+        CityDTO cityDTO = new CityDTO
+        {
+            Id = city.Id,
+            Name = city.Name,
+            Walkers = walkerDTOs // Assign the list of WalkerDTOs to the Walkers property
+        };
+
+        // Add the CityDTO to the list
+        cityDTOs.Add(cityDTO);
+    }
+
+    return cityDTOs;
 });
+
+
 
 app.MapGet("/api/walkers", () =>
 {
@@ -319,6 +365,31 @@ app.MapPost("/api/dogs", (Dogs dog) =>
             Name = city.Name
         }
     });
+
+});
+
+app.MapGet("/api/cities/{id}", (int id) =>
+{
+
+    City city = cities.FirstOrDefault(c => c.Id == id);
+
+    List<WalkerCities> walkerCitiesForCity = walkerCities.Where(wc => wc.WalkerId == id).ToList();
+
+    List<Walker> walkersForCity = walkerCitiesForCity.Select(wc => walkers.First(w => w.Id == wc.WalkerId)).ToList();
+
+    List<WalkerDTO> walkerDTOs = walkersForCity.Select(walker => new WalkerDTO
+    {
+        Id = walker.Id,
+        Name = walker.Name
+    }).ToList();
+
+
+    return new CityDTO
+    {
+        Id = city.Id,
+        Name = city.Name,
+        Walkers = walkerDTOs
+    };
 
 });
 

@@ -1,4 +1,4 @@
-import { useNavigate } from "react-router-dom";
+
 import { getAllWalkers, getAllCities } from "./apiManager";
 import { useEffect, useState } from "react";
 
@@ -6,8 +6,8 @@ export default function Walkers() {
 
     const [allWalkers, setAllWalkers] = useState([])
     const [allCities, setAllCities] = useState([])
-    const [selectedCity, setSelectedCity] = useState({})
-    const navigate = useNavigate()
+    const [selectedCityId, setSelectedCityId] = useState("")
+
 
 
     const getAndResetAllWalkers = () => {
@@ -27,25 +27,33 @@ export default function Walkers() {
         getAndResetAllCities()
     }, [])
 
-    const handleSubmitClick = () => {
-       
-    }
 
     return <>
         <div className="walkerListContainer">
 
             <h2>Current Walkers:</h2>
-            {allWalkers.map((walker) => {
-                return <div className="walkerListItem" key={walker.id}>
-                    <p>{walker.name}</p>
-                </div>
-            })}
+            {
+                selectedCityId == "" ?
+                    allWalkers.map((walker) => (
+                        <div className="walkerListItem" key={walker.id}>
+                            <p>{walker.name}</p>
+                        </div>
+                    )) :
+                    allCities.filter((city) => city.id == selectedCityId)
+                        .map((city) => (
+                            city.walkers.map((walker) => (
+                                <div className="walkerListItem" key={walker.id}>
+                                    <p>{walker.name}</p>
+                                </div>
+                            ))
+                        ))
+            }
             <select
                 className="walkerCity-input"
-                value={selectedCity.id} // Assuming `dogCity.city` is the selected city
+                value={selectedCityId}
                 onChange={(event) => {
                     const newCity = event.target.value;
-                    setSelectedCity(newCity);
+                    setSelectedCityId(newCity);
                 }}
             >
                 <option value="">Filter Walker By City</option>
@@ -55,7 +63,7 @@ export default function Walkers() {
                     </option>
                 ))}
             </select>
-        </div>
+        </div >
     </>
 
 }
