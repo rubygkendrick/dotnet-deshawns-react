@@ -263,30 +263,12 @@ app.MapGet("/api/dogs", () =>
     });
 });
 
-//app.MapGet("/api/cities", () =>
-//{
-//
-//    List<Walker> walkersForCity = walkerCities.Select(wc => walkers.First(w => w.Id == wc.WalkerId)).ToList();
-//
-//    List<WalkerDTO> walkerDTOs = walkersForCity.Select(walker => new WalkerDTO
-//    {
-//        Id = walker.Id,
-//        Name = walker.Name
-//    }).ToList();
-//
-//    return cities.Select(c => new CityDTO
-//    {
-//        Id = c.Id,
-//        Name = c.Name,
-//        Walkers = walkerDTOs
-//    });
-//});
 
 app.MapGet("/api/cities", () =>
 {
     List<CityDTO> cityDTOs = new List<CityDTO>();
 
-    foreach (var city in cities)
+    foreach (City city in cities)
     {
         // Find the walker cities for the current city
         List<WalkerCities> walkerCitiesForCity = walkerCities.Where(wc => wc.CityId == city.Id).ToList();
@@ -320,11 +302,36 @@ app.MapGet("/api/cities", () =>
 
 app.MapGet("/api/walkers", () =>
 {
-    return walkers.Select(w => new WalkerDTO
+    List<WalkerDTO> walkerDTOs = new List<WalkerDTO>();
+
+    foreach (Walker walker in walkers)
     {
-        Id = w.Id,
-        Name = w.Name,
-    });
+        // Find the walker cities for the current walker
+        List<WalkerCities> walkerCitiesForWalker = walkerCities.Where(wc => wc.WalkerId == walker.Id).ToList();
+
+        // Find the cities for the current walker
+        List<City> citiesForWalkers = walkerCitiesForWalker.Select(wc => cities.First(c => c.Id == wc.CityId)).ToList();
+
+        // Convert cities to cityDTOs
+        List<CityDTO> cityDTOs = citiesForWalkers.Select(city => new CityDTO
+        {
+            Id = city.Id,
+            Name = city.Name
+        }).ToList();
+
+        // Create WalkerDTO for the current walker
+        WalkerDTO walkerDTO = new WalkerDTO
+        {
+            Id = walker.Id,
+            Name = walker.Name,
+            Cities = cityDTOs// Assign the list of WalkerDTOs to the Walkers property
+        };
+
+        // Add the CityDTO to the list
+        walkerDTOs.Add(walkerDTO);
+    }
+
+    return walkerDTOs;
 });
 
 
@@ -429,7 +436,7 @@ app.MapGet("/api/dogs/{id}", (int id) =>
 
 app.MapPost("/api/cities", (City city) =>
 {
-  
+
     if (city == null)
     {
         return Results.BadRequest();
@@ -437,7 +444,7 @@ app.MapPost("/api/cities", (City city) =>
 
     if (cities.Count == 0)
     {
-        city.Id = 1; 
+        city.Id = 1;
     }
     else
     {
@@ -455,6 +462,23 @@ app.MapPost("/api/cities", (City city) =>
         }
     });
 
+});
+
+
+app.MapPut("/api/dogs/{id}", (int id, Dogs updatedDog) =>
+{
+  
+    Dogs dogToUpdate = dogs.FirstOrDefault(dog => dog.Id == id);
+
+    if (dogToUpdate == null)
+    {
+        return Results.NotFound();
+    }
+
+    
+    dogToUpdate.WalkerId = updatedDog.WalkerId;
+    
+    return Results.Ok(dogToUpdate);
 });
 
 app.Run();
