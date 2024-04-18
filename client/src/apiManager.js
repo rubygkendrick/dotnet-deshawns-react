@@ -33,14 +33,25 @@ export const addNewCity = async (newCityObject) => {
   })
 }
 
+export const editDogWalkerId = async (dogId, dogObject) => {
+  return fetch(`/api/dogs/${dogId}`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(dogObject),
+  }).then((res) => res.json())
+}
+
+
 
 export const getAllCities = async () => {
-  const res = await fetch ("/api/cities")
+  const res = await fetch("/api/cities")
   return res.json()
 }
 
 
 export const getAllWalkers = async () => {
-  const res = await fetch ("/api/walkers")
+  const res = await fetch("/api/walkers")
   return res.json();
 }
