@@ -2,7 +2,7 @@
 import { getAllWalkers, getAllCities, getAllDogs, editDogWalkerId } from "./apiManager";
 import { useEffect, useState } from "react";
 import "./Index.css"
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 
 export default function Walkers() {
@@ -44,7 +44,7 @@ export default function Walkers() {
     const handleUpdateDogWalker = () => {
 
         const editedDog = {
-            walkerId:parseInt(walkerIdToUpdate), 
+            walkerId: parseInt(walkerIdToUpdate),
         }
         editDogWalkerId(parseInt(dogIdToUpdate), editedDog)
             .then(() => {
@@ -63,7 +63,9 @@ export default function Walkers() {
                     allWalkers.map((walker) => (
                         <div key={walker.id}>
                             <span className="walkerListItem">
-                                <p className="walkerItem">{walker.name}</p>
+                                <Link to={`/walkers/${walker.id}`}>
+                                    <p className="walkerItem">{walker.name}</p>
+                                </Link>
                                 <select
                                     className="addDog-input walkerItem"
                                     onChange={(event) => {
