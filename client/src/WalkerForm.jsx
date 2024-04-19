@@ -6,8 +6,9 @@ export default function WalkerForm() {
 
     const [walker, setWalker] = useState({})
     const [allCities, setAllCities] = useState([])
-    const [walkerCities, setWalkerCities] = useState([])
-    const [cityCheckboxes, setCityCheckboxes] = useState([])
+    const [currentWalkerCities, setCurrentWalkerCities] = useState([])
+    const [selectedCities, setSelectedCities] = useState([])
+
     const [walkerName, setWalkerName] = useState("")
     const { walkerId } = useParams()
     const navigate = useNavigate()
@@ -16,6 +17,8 @@ export default function WalkerForm() {
     const fetchWalkerDetails = () => {
         getWalkerById(walkerId).then(walkerObject => {
             setWalker(walkerObject)
+            setCurrentWalkerCities(walkerObject.cities.map(c => c.id))
+
         })
     }
 
@@ -24,40 +27,42 @@ export default function WalkerForm() {
             setAllCities(cityArray)
         })
     }
-   
+
     useEffect(() => {
         fetchWalkerDetails()
-        fetchAllCities() 
-        
+        fetchAllCities()
+
     }, [])
- 
- 
 
 
 
 
-    const handleCheckboxChange = (event) => {
-        const { value, checked } = event.target;
-        setCityCheckboxes((prevState) => {
-            // Check if the city already exists in the state array
-            const index = prevState.findIndex((city) => city.value == value);
-            // If the city exists, update its checked value
-            if (index !== -1) {
-                const updatedCityCheckboxes = [...prevState];
-                updatedCityCheckboxes[index] = { value, checked };
-                return updatedCityCheckboxes;
+
+
+    const handleCheckBoxChange = (event) => {
+        const value = parseInt(event.target.value)
+        const isChecked = event.target.checked
+        if (!currentWalkerCities) {
+
+            if (isChecked) {
+                setSelectedCities([...selectedCities, value])
+            } else {
+                setSelectedCities(selectedCities.filter(id => id != value))
             }
-            // If the city doesn't exist, add it to the state array
-            return [...prevState, { value, checked }];
-        });
+        } else {
+            if (isChecked) {
+                setCurrentWalkerCities([...currentWalkerCities, value])
+            } else {
+                setCurrentWalkerCities(currentWalkerCities.filter(id => id != value))
+            }
+        }
+    }
 
-    };
 
-    
-
+  
     const handleUpdateWalkerClick = () => {
 
-        const selectedCities = allCities.filter(city => cityCheckboxes.some(checkbox => checkbox.value == city.id))
+        const selectedCities = allCities.filter(city => currentWalkerCities.some(cityId => cityId == city.id));
 
         const editedWalker = {
             name: walkerName,
@@ -89,8 +94,11 @@ export default function WalkerForm() {
                         <input className="city-checkbox"
                             type="checkbox"
                             value={city.id}
-                            checked={cityCheckboxes.checked}
-                            onChange={handleCheckboxChange}
+                            checked={
+                                currentWalkerCities ? currentWalkerCities?.includes(city.id) :
+                                    selectedCities.includes(city.id)
+                            }
+                            onChange={handleCheckBoxChange}
 
                         >
                         </input>
