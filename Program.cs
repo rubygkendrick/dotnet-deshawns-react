@@ -274,7 +274,14 @@ app.MapGet("/api/cities", () =>
         List<WalkerCities> walkerCitiesForCity = walkerCities.Where(wc => wc.CityId == city.Id).ToList();
 
         // Find the walkers for the current city
-        List<Walker> walkersForCity = walkerCitiesForCity.Select(wc => walkers.First(w => w.Id == wc.WalkerId)).ToList();
+       
+        List<Walker> walkersForCity = walkerCitiesForCity.Select(wc =>
+        {
+            // Find the walker for the current walker city
+            Walker walker = walkers.FirstOrDefault(w => w.Id == wc.WalkerId);
+            return walker;
+        }).Where(walker => walker != null).ToList(); //filter out null walkers
+
 
         // Convert walkers to WalkerDTOs
         List<WalkerDTO> walkerDTOs = walkersForCity.Select(walker => new WalkerDTO
@@ -554,5 +561,27 @@ app.MapPut("/api/walkers/{id}", (int id, Walker updatedWalker) =>
 
 });
 
+app.MapDelete("/api/walkerToDelete/{id}", (int id) =>
+{
+    Walker walkerToDelete = walkers.FirstOrDefault(w => w.Id == id);
+
+    foreach (Dogs dog in dogs)
+    {
+        if (dog.WalkerId == id)
+        {
+            dog.WalkerId = 0;
+        }
+    }
+
+
+    if (walkerToDelete == null)
+    {
+        return Results.BadRequest();
+    }
+    walkers.Remove(walkerToDelete);
+
+    return Results.NoContent();
+
+});
 
 app.Run();
