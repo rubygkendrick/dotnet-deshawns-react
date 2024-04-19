@@ -584,4 +584,19 @@ app.MapDelete("/api/walkerToDelete/{id}", (int id) =>
 
 });
 
+app.MapDelete("/api/dogToDelete/{id}", (int id) =>
+{
+    Dogs dogToDelete= dogs.FirstOrDefault(d => d.Id == id);
+
+    if (dogToDelete == null)
+    {
+        return Results.BadRequest();
+    }
+    dogs.Remove(dogToDelete);
+
+    return Results.NoContent();
+
+});
+
+
 app.Run();
