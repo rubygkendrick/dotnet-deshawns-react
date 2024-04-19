@@ -334,6 +334,32 @@ app.MapGet("/api/walkers", () =>
     return walkerDTOs;
 });
 
+app.MapGet("/api/walkers/{id}", (int id) =>
+{
+    List<WalkerDTO> walkerDTOs = new List<WalkerDTO>();
+
+    Walker walker = walkers.FirstOrDefault(w => w.Id == id);
+    List<WalkerCities> walkerCitiesForWalker = walkerCities.Where(wc => wc.WalkerId == walker.Id).ToList();
+    List<City> citiesForWalkers = walkerCitiesForWalker.Select(wc => cities.First(c => c.Id == wc.CityId)).ToList();
+    List<CityDTO> cityDTOs = citiesForWalkers.Select(city => new CityDTO
+    {
+        Id = city.Id,
+        Name = city.Name
+    }).ToList();
+
+    if (walker == null)
+    {
+        return Results.NotFound();
+    }
+
+
+    return Results.Ok(new WalkerDTO
+    {
+        Id = walker.Id,
+        Name = walker.Name,
+        Cities = cityDTOs
+    });
+});
 
 
 
@@ -467,7 +493,7 @@ app.MapPost("/api/cities", (City city) =>
 
 app.MapPut("/api/dogs/{id}", (int id, Dogs updatedDog) =>
 {
-  
+
     Dogs dogToUpdate = dogs.FirstOrDefault(dog => dog.Id == id);
 
     if (dogToUpdate == null)
@@ -475,10 +501,58 @@ app.MapPut("/api/dogs/{id}", (int id, Dogs updatedDog) =>
         return Results.NotFound();
     }
 
-    
+
     dogToUpdate.WalkerId = updatedDog.WalkerId;
-    
+
     return Results.Ok(dogToUpdate);
 });
+
+
+
+app.MapPut("/api/walkers/{id}", (int id, Walker updatedWalker) =>
+{
+    Walker walkerToUpdate = walkers.FirstOrDefault(w => w.Id == id);
+    if (walkerToUpdate == null)
+    {
+        return Results.NotFound();
+    }
+    walkerCities = walkerCities.Where(wc => wc.WalkerId != walkerToUpdate.Id).ToList();
+    if (updatedWalker.Cities != null)
+    {
+
+        foreach (City city in updatedWalker.Cities)
+        {
+            if (city != null)
+            {
+                WalkerCities newWC = new WalkerCities
+                {
+                    Id = walkerCities.Count > 0 ? walkerCities.Max(wc => wc.Id) + 1 : 1,
+                    WalkerId = walkerToUpdate.Id,
+                    CityId = city.Id
+                };
+                walkerCities.Add(newWC);
+            }
+        }
+    };
+
+    List<WalkerCities> walkerCitiesForWalker = walkerCities.Where(wc => wc.WalkerId == walkerToUpdate.Id).ToList();
+    List<City> citiesForWalker = walkerCitiesForWalker.Select(wc => cities.First(c => c.Id == wc.CityId)).ToList();
+    List<CityDTO> cityDTOs = citiesForWalker.Select(city => new CityDTO
+    {
+        Id = city.Id,
+        Name = city.Name
+    }).ToList();
+
+
+
+    return Results.Ok(new WalkerDTO
+    {
+        Id = walkerToUpdate.Id,
+        Name = updatedWalker.Name,
+        Cities = cityDTOs
+    });
+
+});
+
 
 app.Run();

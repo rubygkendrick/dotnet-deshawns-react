@@ -13,6 +13,9 @@ export const getDogDetails = async (dogId) => {
   return res.json();
 }
 
+
+
+
 export const addNewDog = async (newDogObject) => {
   return fetch("/api/dogs", {
     method: "POST",
@@ -43,6 +46,16 @@ export const editDogWalkerId = async (dogId, dogObject) => {
   }).then((res) => res.json())
 }
 
+export const editWalker= async (walkerId, walkerObject) => {
+  return fetch(`/api/walkers/${walkerId}`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(walkerObject),
+  }).then((res) => res.json())
+}
+
 
 
 export const getAllCities = async () => {
@@ -53,5 +66,10 @@ export const getAllCities = async () => {
 
 export const getAllWalkers = async () => {
   const res = await fetch("/api/walkers")
+  return res.json();
+}
+
+export const getWalkerById = async (walkerId) => {
+  const res = await fetch(`/api/walkers/${walkerId}`);
   return res.json();
 }

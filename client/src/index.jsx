@@ -9,6 +9,7 @@ import  DogDetails  from "./DogDetails";
 import AddADog from "./AddADog";
 import Walkers from "./Walkers";
 import Cities from "./Cities";
+import WalkerForm from "./WalkerForm";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
@@ -19,6 +20,7 @@ root.render(
         <Route path="dogs/:dogId" element={<DogDetails/>}></Route>
         <Route path="newDog" element={<AddADog/>}></Route>
         <Route path="walkers" element={<Walkers/>}></Route>
+        <Route path="walkers/:walkerId" element={<WalkerForm/>}></Route>
         <Route path="cities" element={<Cities/>}></Route>
       </Route>
       
