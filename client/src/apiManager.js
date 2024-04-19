@@ -73,3 +73,12 @@ export const getWalkerById = async (walkerId) => {
   const res = await fetch(`/api/walkers/${walkerId}`);
   return res.json();
 }
+
+export const deleteWalker = async (walkerId) => {
+  return fetch(`/api/walkerToDelete/${walkerId}`, {
+    method: "DELETE",
+    headers: {
+        "Content-Type": "application/json",
+    },
+})
+}

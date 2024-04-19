@@ -1,5 +1,5 @@
 
-import { getAllWalkers, getAllCities, getAllDogs, editDogWalkerId } from "./apiManager";
+import { getAllWalkers, getAllCities, getAllDogs, editDogWalkerId, deleteWalker } from "./apiManager";
 import { useEffect, useState } from "react";
 import "./Index.css"
 import { Link, useNavigate } from "react-router-dom";
@@ -52,6 +52,13 @@ export default function Walkers() {
             })
     }
 
+    const handleRemoveDogWalker = (event) => {
+        deleteWalker(event.target.value).then(() => {
+         getAndResetAllWalkers()
+        })
+    }
+
+
 
 
     return <>
@@ -74,7 +81,7 @@ export default function Walkers() {
                                         setWalkerIdToUpdate(walker.id)
                                     }}
                                 >
-                                    <option value="">Add a Dog</option>
+                                    <option value="">Select Dog</option>
                                     {
                                         allDogs.filter((dog) =>
                                             walker.cities?.some(walkerCity => walkerCity.id === dog.cityId) &&
@@ -94,7 +101,8 @@ export default function Walkers() {
                                         )}
                                 </select>
                                 <button onClick={handleUpdateDogWalker}>Add Dog</button>
-
+                                <button value={walker.id} onClick={handleRemoveDogWalker}>Remove Walker</button>
+                                       
                             </span>
                         </div>
                     )) :
