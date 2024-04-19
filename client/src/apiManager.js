@@ -82,3 +82,12 @@ export const deleteWalker = async (walkerId) => {
     },
 })
 }
+
+export const deleteDog = async (dogId) => {
+  return fetch(`/api/dogToDelete/${dogId}`, {
+    method: "DELETE",
+    headers: {
+        "Content-Type": "application/json",
+    },
+})
+}

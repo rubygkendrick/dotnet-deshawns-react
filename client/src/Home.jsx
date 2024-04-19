@@ -1,5 +1,5 @@
 import { Link, useNavigate } from "react-router-dom";
-import { getGreeting, getAllDogs } from "./apiManager";
+import { getGreeting, getAllDogs, deleteDog } from "./apiManager";
 import { useEffect, useState } from "react";
 
 export default function Home() {
@@ -35,6 +35,12 @@ export default function Home() {
     navigate("/newDog")
   }
 
+  const handleRemoveDogClick = (event) => {
+    deleteDog(event.target.value).then(() => {
+      getAndResetAllDogs()
+    })
+  }
+
   return <>
     <h1>{greeting.message}</h1>
     <div className="dogListContainer">
@@ -44,6 +50,7 @@ export default function Home() {
           <Link to={`/dogs/${dog.id}`}>
             <p>{dog.name}</p>
           </Link>
+          <button value={dog.id} onClick={handleRemoveDogClick}>Remove Dog</button>
         </div>
       })}
     </div>
